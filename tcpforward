@@ -3,6 +3,7 @@
 use Fcntl;
 use Errno;
 use IO::Socket::INET;
+use IO::Socket::UNIX;
 use Pod::Usage qw/pod2usage/;
 use warnings;
 use strict;
@@ -128,9 +129,21 @@ sub transfer {
 
 sub lsock {
   my $addr = shift;
-  my $sock = IO::Socket::INET->new(
-    LocalAddr => $addr, Listen => SOMAXCONN, ReuseAddr => 1, @_) or
-      die "listen error for $addr: $!";
+  my $sock;
+
+  if ($addr =~ m#/#) {
+    !-e $addr or unlink $addr or
+      die "error cleaning up domain socket $_: $!";
+    $sock = IO::Socket::UNIX->new(
+      Local => $addr, Listen => 1, @_) or
+        die "listen error for $addr: $!";
+  }
+  else {
+    $sock = IO::Socket::INET->new(
+      LocalAddr => $addr, Listen => SOMAXCONN, ReuseAddr => 1, @_) or
+        die "listen error for $addr: $!";
+  }
+
   return $sock;
 }
 
@@ -143,9 +156,15 @@ sub asock {
 
 sub csock {
   my $addr = shift;
-  my $sock = IO::Socket::INET->new(PeerAddr => $addr, @_) or
-    die "connect error for $addr: $!";
-  return $sock;
+
+  if ($addr =~ m#/#) {
+    return IO::Socket::UNIX->new(Peer => $addr, @_) or
+      die "connect error for $addr: $!";
+  }
+  else {
+    return IO::Socket::INET->new(PeerAddr => $addr, @_) or
+      die "connect error for $addr: $!";
+  }
 }
 
 sub nonblock {
