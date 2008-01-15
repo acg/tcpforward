@@ -133,7 +133,7 @@ sub lsock {
 
   if ($addr =~ m#/#) {
     !-e $addr or unlink $addr or
-      die "error cleaning up domain socket $_: $!";
+      die "error cleaning up domain socket $addr: $!";
     $sock = IO::Socket::UNIX->new(
       Local => $addr, Listen => 1, @_) or
         die "listen error for $addr: $!";
