@@ -121,7 +121,7 @@ sub transfer {
     }
   }
 
-  verbose(1, sprintf 'xfer %d %d %d', fileno $rfh, fileno $wfh, $total);
+  verbose(1, sprintf 'xfer %d -> %d : %d', fileno $rfh, fileno $wfh, $total);
   return 0 if defined $bytes; # sysread == 0, EOF
   return 1 if $!{EAGAIN};
   die "read error: $!";
@@ -156,15 +156,17 @@ sub asock {
 
 sub csock {
   my $addr = shift;
+  my $sock;
 
   if ($addr =~ m#/#) {
-    return IO::Socket::UNIX->new(Peer => $addr, @_) or
+    $sock = IO::Socket::UNIX->new(Peer => $addr, @_) or
       die "connect error for $addr: $!";
   }
   else {
-    return IO::Socket::INET->new(PeerAddr => $addr, @_) or
+    $sock = IO::Socket::INET->new(PeerAddr => $addr, @_) or
       die "connect error for $addr: $!";
   }
+  return $sock;
 }
 
 sub nonblock {
