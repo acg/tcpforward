@@ -214,17 +214,17 @@ Forward local SMTP to a remote mailserver:
 
   $ tcpforward -k -c mailserver:25 -l localhost:25
 
-Forward tunnel the SSH service on 10.0.0.100 to 10.0.0.101:
+Forward tunnel the SSH service on host1 to host2:
 
-  [10.0.0.100]$ tcpforward -l 10.0.0.100:9922 -c localhost:22
-  [10.0.0.101]$ tcpforward -c 10.0.0.100:9922 -l localhost:22 
-  [10.0.0.101]$ ssh localhost
+  [host1]$ tcpforward -l host1:9922 -c localhost:22
+  [host2]$ tcpforward -c host1:9922 -l localhost:22 
+  [host2]$ ssh localhost
 
-Reverse tunnel the SSH service on 10.0.0.100 to 10.0.0.101:
+Reverse tunnel the SSH service on host1 to host2:
 
-  [10.0.0.101]$ tcpforward -l 10.0.0.101:9922 -l localhost:22
-  [10.0.0.100]$ tcpforward -c 10.0.0.101:9922 -c localhost:22
-  [10.0.0.101]$ ssh localhost
+  [host2]$ tcpforward -l host2:9922 -l localhost:22
+  [host1]$ tcpforward -c host2:9922 -c localhost:22
+  [host2]$ ssh localhost
 
 =head1 DESCRIPTION
 
@@ -299,7 +299,7 @@ When forwarding, attempt non-blocking reads of size bytes at a time. Setting
 this to the median packet size for a given protocol may result in some small
 performance gain.
 
-=item -v
+=item -V
 
 Print version number and exit.
 
@@ -320,11 +320,11 @@ tcpforward should be rewritten in C. Please report other bugs on CPAN.
 
 =head1 AUTHOR
 
-Alan Grow <agrow+nospam@thegotonerd.com>
+Alan Grow <alangrow+tcpforward@gmail.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2007 by Alan Grow
+Copyright (C) 2007, 2010 by Alan Grow
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself, either Perl version 5.8.3 or, at
