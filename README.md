@@ -62,15 +62,15 @@ double encryption.
 
 * `-c host:port`
 
-Connect to host:port, then do forwarding on the socket.
+Connect to `host:port`, then do forwarding on the socket.
 
 * `-l host:port`
 
-Listen for connections on host:port, then do forwarding on the accepted socket.
+Listen for connections on `host:port`, then do forwarding on the accepted socket.
 
 * `-N count`
 
-Exit after forwarding count TCP connections.
+Exit after forwarding `count` TCP connections.
 
 * `-k`
 
@@ -79,7 +79,7 @@ simultaneous forwarded connections. The default is non-forking.
 
 * `-s size`
 
-When forwarding, attempt non-blocking reads of size bytes at a time. Setting
+When forwarding, attempt non-blocking reads of `size` bytes at a time. Setting
 this to the median packet size for a given protocol may result in some small
 performance gain.
 
@@ -90,7 +90,7 @@ Print version number and exit.
 * `-v`
 
 Turn on parseable logging to standard out. Increase logging level with
-extra -v options.
+extra `-v` options.
 
 * `-h`
 
