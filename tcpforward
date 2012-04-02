@@ -55,6 +55,8 @@ while (@ARGV) {
 
 die $usage unless @addr == 2;
 
+local $SIG{CHLD} = 'IGNORE';   # automatically reap children
+
 for (my $n=0; !defined $count || $n<$count; $n++) {
   my @socks;
 
@@ -305,8 +307,6 @@ Display usage information.
 =back
 
 =head1 BUGS
-
-=item * zombies with -k because forwarding processes are not reaped as they die
 
 =item * tcpforward should be rewritten in C. Please report other bugs on CPAN.
 
