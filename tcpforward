@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-use Fcntl;
 use Errno;
 use IO::Socket::INET;
 use IO::Socket::UNIX;
@@ -61,7 +60,7 @@ for (my $n=0; !defined $count || $n<$count; $n++) {
 
   for my $i (0, 1) {
     $socks[$i] = $lsocks[$i] ? asock($lsocks[$i]) : csock($addr[$i]);
-    $socks[$i] = nonblock($socks[$i]);
+    $socks[$i] -> blocking(0);
     verbose(1, sprintf 'sock %s %d', $addr[$i], fileno $socks[$i]);
   }
 
@@ -116,14 +115,14 @@ sub transfer {
 
     while ($bytes > 0) {
       my $written = syswrite $wfh, $data, $bytes, length($data) - $bytes;
-      die "write error: $!" if !defined $written && !$!{EAGAIN};
+      die "write error: $!" if !defined $written && !($!{EAGAIN} || $!{EWOULDBLOCK});
       $bytes -= $written if defined $written;
     }
   }
 
   verbose(1, sprintf 'xfer %d -> %d : %d', fileno $rfh, fileno $wfh, $total);
   return 0 if defined $bytes; # sysread == 0, EOF
-  return 1 if $!{EAGAIN};
+  return 1 if ($!{EAGAIN} || $!{EWOULDBLOCK});
   die "read error: $!";
 }
 
@@ -167,15 +166,6 @@ sub csock {
       die "connect error for $addr: $!";
   }
   return $sock;
-}
-
-sub nonblock {
-  my $fh = shift;
-  my $flags = fcntl $fh, F_GETFL, 0 or
-    die "fcntl error: $!";
-  fcntl $fh, F_SETFL, $flags | O_NONBLOCK or
-    die "fcntl error: $!";
-  return $fh;
 }
 
 sub fdset {
