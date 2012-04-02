@@ -306,7 +306,9 @@ Display usage information.
 
 =head1 BUGS
 
-tcpforward should be rewritten in C. Please report other bugs on CPAN.
+=item * zombies with -k because forwarding processes are not reaped as they die
+
+=item * tcpforward should be rewritten in C. Please report other bugs on CPAN.
 
 =head1 AUTHOR
 
